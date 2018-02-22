@@ -149,23 +149,29 @@ export default {
     },
     sbmitPost () {
       if (this.post.title.length === 0) {
+        var result=true;
         this.$notify.error({
           title: '警告',
           message: '发帖必须填写标题'
         })
+        result = false
         // 金额不能为空
       } else if (this.post.money.length === 0) {
         this.$notify.error({
           title: '警告',
           message: '发帖必须填写标题发帖必须填写金额'
         })
+        result = false
       } else if (this.editor.txt.text().length === 0) {
         this.$notify.error({
           title: '警告',
           message: '发帖必须填写标题发帖必须填写内容'
         })
+        result = false
       }
+      if(result){
       this.postAjax(this.post);
+      }
     },
     postAjax (data) {
    var result;
