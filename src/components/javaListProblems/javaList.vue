@@ -148,8 +148,8 @@ export default {
 
     },
     sbmitPost () {
+      var result=true;
       if (this.post.title.length === 0) {
-        var result=true;
         this.$notify.error({
           title: '警告',
           message: '发帖必须填写标题'
