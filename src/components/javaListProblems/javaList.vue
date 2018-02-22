@@ -1,10 +1,11 @@
 <template>
   <el-container>
-    <el-header  height="13em">
+    <el-header  height="5em">
       标题
        </el-header>
 
     <el-main>
+      <div class="mainheight">
         <el-row>
           <el-col :span="12">
             <el-radio size="mini" v-model="timeCondition" label="Lately">最近的提问</el-radio>
@@ -25,50 +26,39 @@
         </el-row>
 
         <el-row>
-        <el-col :span="24">
+        <el-col :span="24" v-for="item in problems">
           <div class="problemSize">
 
             <el-row>
               <el-col :span="3">
-                <el-badge :value="200" :max="99" class="item">
+                <el-badge :value="item.viewingtimes" :max="99" class="item">
                   <el-button size="small">浏览次数</el-button>
                 </el-badge>
                   <br/>
-                <el-badge style="margin-top: 1em;" :value="200" :max="99" class="item">
+                <el-badge style="margin-top: 0.3em; margin-bottom: 0.2em;" :value="200" :max="99" class="item">
                   <el-button size="small">评论次数</el-button>
                 </el-badge>
               </el-col>
 
               <el-col :span="17">
-                <span style="font-size:1.3em;"> 标题标题标题标题标题标题标题标题标题标题</span>
+                <span style="font-size:1.05em;">{{item.title}}</span>
                 <br/>
-                <span style="font-size:0.8em;">帖子内容阿三大苏打帖子内容阿三大苏打帖子内容阿三大苏打帖子内容阿三大苏打帖子内容阿三大苏打帖子内容阿三大苏打帖子内容阿三大苏打帖子内容阿三大苏打帖子内容阿三大苏打</span>
+                <span style="font-size:0.8em;">{{filterHtml(item.showContent) }}</span>
               </el-col>
 
               <el-col :span="4">
-                <el-button size="mini">发起人:{{creator}}</el-button>
+                发起人: <el-button size="mini" :value="item.creator">阿三大苏打撒</el-button>
                 <br/>
-                {{creationTime}}
+                1293-22-32 12:32:21
               </el-col>
-
             </el-row>
           </div>
         </el-col>
 
-          <el-col :span="24">
-            <div class="problemSize">
-              <el-row>
-                <el-col :span="2">浏览</el-col>
-                <el-col :span="18">提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问提问</el-col>
-                <el-col :span="4">{{creationTime}}</el-col>
-              </el-row>
-            </div>
-          </el-col>
-
       </el-row>
-
+      </div>
     </el-main>
-
+    <el-footer><el-pagination background layout="prev, pager, next" :total="1000"> </el-pagination></el-footer>
     <el-dialog :visible.sync="dialogVisible"  width="80em"  :close-on-press-escape=false :close-on-click-modal=false>
       <el-row>
         <el-col :span="24">
@@ -117,14 +107,13 @@ export default {
       timeCondition: 'Lately',
       solve: 'noSolved',
       textCondition: '',
-      creationTime: '2018-2-21 18:21:34',
-      creator: '晨雾',
       editor: null, //  富文本对象
       post: {
         money: '', // 发帖的金额
         showContent: '', // 发帖内容
         title: '' // 提问帖子的标题
-      }
+      },
+      problems:null
     }
   },
   beforeDestroy () {
@@ -170,39 +159,39 @@ export default {
         result = false
       }
       if(result){
-      this.postAjax(this.post);
+      this.postAjax(this.post,'iProblem/insert/Problem');
       }
     },
-    postAjax (data) {
+    postAjax (data,url,callback) {
    var result;
      this.$ajax({
         method: 'post',
-        url: 'http://192.168.0.102:9000/iProblem/insert/Problem',
+        url: 'http://192.168.0.102:9000/'+url,
         data: JSON.stringify(data),
        dataType: "json",
+       async:false,
       }).then(function(res){
-       result=res.data
-     })
-       .catch(function(err){
-         this.$notify.error({
-           title: '警告',
-           message: err.message
-         })
-         console.log(err);
+       callback(res.data)
+     }).catch(function(err){
+
        })
-      return result;
     },
-
-
-
     closePost () { // 清空文本
       this.editor.txt.clear()
+    },
+    shouProblem(data){
+      this.problems=data.list;
+    },
+    filterHtml(str){
+      var reg=/<[^<>]+>/g;
+      return str.replace(reg,'');
     }
-
   },
 
   mounted () {
     this.dialogVisible = false
+    this.postAjax(this.post,'iProblem/selectAll/Problem',this.shouProblem);
+
   }
 
 }
@@ -217,10 +206,13 @@ export default {
   .el-main {
     color: #333;
     text-align: center;
-    line-height: 2em;
+    line-height: 1.5em;
   }
   .problemSize{
-    margin-top: 1em;
+    margin-top: 0.5em;
     border-bottom:1px dashed #000;
+  }
+  .mainheight{
+    height:42em;
   }
 </style>
