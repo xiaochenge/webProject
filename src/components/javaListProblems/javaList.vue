@@ -166,7 +166,6 @@ export default {
         })
       }
       this.postAjax(this.post);
-      alert('a')
     },
     postAjax (data) {
    var result;
