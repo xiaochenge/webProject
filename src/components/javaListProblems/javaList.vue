@@ -122,7 +122,7 @@ export default {
       editor: null, //  富文本对象
       post: {
         money: '', // 发帖的金额
-        editorContent: '', // 发帖内容
+        showContent: '', // 发帖内容
         title: '' // 提问帖子的标题
       }
     }
@@ -142,7 +142,7 @@ export default {
       this.editor = new E('#editorElem')
       this.editor.customConfig.uploadImgServer = '/upload'
       this.editor.customConfig.onchange = (html) => {
-        this.post.editorContent = html
+        this.post.showContent = html
       }
       this.editor.create()
 
@@ -166,12 +166,13 @@ export default {
         })
       }
       this.postAjax(this.post);
+      alert('a')
     },
     postAjax (data) {
    var result;
      this.$ajax({
         method: 'post',
-        url: 'http://192.168.0.102:9000/text/B',
+        url: 'http://192.168.0.102:9000/iProblem/insert/Problem',
         data: JSON.stringify(data),
        dataType: "json",
       }).then(function(res){
