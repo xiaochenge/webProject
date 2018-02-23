@@ -8,25 +8,23 @@
       <div class="mainheight">
         <el-row>
           <el-col :span="12">
-            <el-radio size="mini" v-model="timeCondition" label="Lately">最近的提问</el-radio>
-            <el-radio size="mini" v-model="timeCondition" label="earliest">最早的提问</el-radio>
             <el-radio size="mini" v-model="solve" label="noSolved">未解决的问题</el-radio>
             <el-radio size="mini" v-model="solve" label="solved">已解决的问题</el-radio>
           </el-col>
 
-          <el-col :span="8">
+          <el-col :span="8"  style=" margin-bottom:0.2em;">
             <el-input v-model="textCondition" placeholder="按条件查询(功能暂未实现)" style="width:15em "></el-input>
             <el-button type="primary" icon="el-icon-search">搜索</el-button>
           </el-col>
 
-          <el-col :span="4">
+          <el-col :span="4" style=" margin-bottom:1em;">
             <el-button type="primary" icon="el-icon-search" @click="openQuestionPage">发帖提问</el-button>
           </el-col>
 
         </el-row>
 
         <el-row>
-        <el-col :span="24" v-for="item in problems">
+        <el-col  class="background" :span="24" v-for="(item,index) in problems" :key="index">
           <div class="problemSize">
 
             <el-row>
@@ -34,12 +32,12 @@
                 <el-badge :value="item.viewingtimes" :max="99" class="item">
                   <el-button size="small">浏览次数</el-button>
                 </el-badge>
-                  <br/>
-                <el-badge style="margin-top: 0.3em; margin-bottom: 0.2em;" :value="200" :max="99" class="item">
+
+                <el-badge style="margin-top: 0.3em; margin-bottom:0.2em;" :value="200" :max="99" class="item">
                   <el-button size="small">评论次数</el-button>
                 </el-badge>
               </el-col>
-
+              <div @click="openProblem(item.id)">
               <el-col :span="17">
                 <span style="font-size:1.05em;">{{item.title}}</span>
                 <br/>
@@ -47,10 +45,13 @@
               </el-col>
 
               <el-col :span="4">
-                发起人: <el-button size="mini" :value="item.creator">阿三大苏打撒</el-button>
+                <el-tooltip class="item" effect="dark" :content="item.creator+''" placement="top-start">
+                <el-button size="mini" >发帖人: {{substring(item.creator,0,6)}}</el-button>
+                </el-tooltip>
                 <br/>
-                1293-22-32 12:32:21
+                <div style="font-size:1.05em; margin-top:0.5em;" >{{formatDateTime(item.creationtime)}}</div>
               </el-col>
+              </div>
             </el-row>
           </div>
         </el-col>
@@ -58,7 +59,7 @@
       </el-row>
       </div>
     </el-main>
-    <el-footer><el-pagination background layout="prev, pager, next" :total="1000"> </el-pagination></el-footer>
+    <el-footer><el-pagination background layout="prev, pager, next" :total="totalCount" :pageSize=problem.limit  @current-change="pageSelect"> </el-pagination></el-footer>
     <el-dialog :visible.sync="dialogVisible"  width="80em"  :close-on-press-escape=false :close-on-click-modal=false>
       <el-row>
         <el-col :span="24">
@@ -66,14 +67,16 @@
             <el-col :span="10" :offset="2">
               <el-input placeholder="请给出具体的标题，以便其他人通过搜索到您更快的回答你" v-model="post.title"> </el-input>
             </el-col>
-
-
-            <el-col :span="3" :offset="2"><el-tooltip class="item" effect="dark" content="请您慎重选择金额，我们不接受高于50元的打赏金额，具体规则请登陆个人中心查看" placement="top-start"> <el-input-number v-model="post.money"  :min="0.5" :max="50" label="悬赏金额"></el-input-number></el-tooltip></el-col>
+            <el-col :span="3" :offset="2"><el-tooltip class="item" effect="dark" content="请您慎重选择金额，我们不接受高于50元的打赏金额，具体规则请登陆个人中心查看" placement="top-start"> <el-input-number v-model="post.money"  :min="0.2" :max="50" label="悬赏金额"></el-input-number></el-tooltip></el-col>
           </el-row>
 
         </el-col>
-          <div id='editorElem' style="text-align:left"> </div>
-
+        <div id="div1" class="toolbar">
+        </div>
+        <div style="padding: 5px 0; color: #ccc"></div>
+        <div id="div2" style="min-height: 35em;"> <!--可使用 min-height 实现编辑区域自动增加高度-->
+          <p>请输入内容</p>
+        </div>
         <el-row>
           <el-col :span="24">
             <el-popover
@@ -104,7 +107,6 @@ export default {
     return {
       dialogVisible: true,
       visible2: false,
-      timeCondition: 'Lately',
       solve: 'noSolved',
       textCondition: '',
       editor: null, //  富文本对象
@@ -113,11 +115,15 @@ export default {
         showContent: '', // 发帖内容
         title: '' // 提问帖子的标题
       },
-      problems:null
+      problem : { // 查询条件
+         id:'', //主键
+        problemstate: '', //是否解决
+        page:1,
+        limit:20
+      },
+      problems:null,//帖子集合
+      totalCount:null//总记录数
     }
-  },
-  beforeDestroy () {
-    this.destroyEditor()
   },
   methods: {
     openQuestionPage () {
@@ -128,13 +134,12 @@ export default {
     },
 
     createEditor () {
-      this.editor = new E('#editorElem')
+      this.editor = new E('#div1', '#div2')
       this.editor.customConfig.uploadImgServer = '/upload'
       this.editor.customConfig.onchange = (html) => {
         this.post.showContent = html
       }
       this.editor.create()
-
     },
     sbmitPost () {
       var result=true;
@@ -173,7 +178,6 @@ export default {
       }).then(function(res){
        callback(res.data)
      }).catch(function(err){
-
        })
     },
     closePost () { // 清空文本
@@ -181,16 +185,46 @@ export default {
     },
     shouProblem(data){
       this.problems=data.list;
+      this.totalCount=data.totalCount;
     },
     filterHtml(str){
       var reg=/<[^<>]+>/g;
       return str.replace(reg,'');
-    }
-  },
-
+    },
+     formatDateTime(timeStamp) {
+      var date = new Date();
+      date.setTime(timeStamp);
+      var y = date.getFullYear();
+      var m = date.getMonth() + 1;
+      m = m < 10 ? ('0' + m) : m;
+      var d = date.getDate();
+      d = d < 10 ? ('0' + d) : d;
+      var h = date.getHours();
+      h = h < 10 ? ('0' + h) : h;
+      var minute = date.getMinutes();
+      var second = date.getSeconds();
+      minute = minute < 10 ? ('0' + minute) : minute;
+      second = second < 10 ? ('0' + second) : second;
+      return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+    },
+    substring(str,indexA,indexB) {
+      str=str+""
+      return str.substring(indexA,indexB)
+    },
+   openProblem(problemId){
+     this.$router.push({name :'problemId',path :'/problem/javaList/contentProblem',params :{problemId:problemId}})
+   },
+    pageSelect(id){
+      this.problem.page=id;
+      this.initSelect();
+    },
+   initSelect(){
+     this.postAjax(this.problem,'iProblem/selectAll/Problem',this.shouProblem);
+   }
+},
   mounted () {
     this.dialogVisible = false
-    this.postAjax(this.post,'iProblem/selectAll/Problem',this.shouProblem);
+   this.initSelect();
 
   }
 
@@ -211,8 +245,13 @@ export default {
   .problemSize{
     margin-top: 0.5em;
     border-bottom:1px dashed #000;
+
   }
   .mainheight{
     height:42em;
+  }
+  .background:hover{
+    background-color: #F2F6FC;
+    cursor:pointer;
   }
 </style>

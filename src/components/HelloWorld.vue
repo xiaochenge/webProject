@@ -14,7 +14,7 @@
     </el-header>
     <el-main>
       <el-row>
-        <el-col :span="12"><div class="grid-content bg-purple"><router-link to="/javaList"><img src='../assets/images/timg.jpg' class="homepageImg1 " /></router-link></div></el-col>
+        <el-col :span="12"><div class="grid-content bg-purple"><router-link to="/problem/javaList"><img src='../assets/images/timg.jpg' class="homepageImg1 " /></router-link></div></el-col>
         <el-col :span="12"><div class="grid-content bg-purple-light"><img src='../assets/images/timg.jpg' class="homepageImg1 " /></div></el-col>
       </el-row>
       <el-row>
