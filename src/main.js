@@ -6,15 +6,21 @@ import 'element-ui/lib/theme-chalk/index.css'
 import App from './App'
 import router from './router'
 import axios from 'axios'
+import store from 'store'
+import Const from './assets/common/Const'
+
 
 Vue.use(ElementUI)
 Vue.prototype.$ajax = axios
+Vue.use(Const)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  Const,
+  store,
   components: { App },
   template: '<App/>'
 })

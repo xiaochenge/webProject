@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
 
+  <div id="app">
     <router-view/>
   </div>
 </template>
@@ -19,7 +19,8 @@
     text-align: center;
     line-height:1em;
     color: #2c3e50;
-    margin-top: 3em;
+    margin-top: 1em;
+    margin-bottom: 3em;
     margin-left:auto;
     margin-right:auto;
     width:70em;

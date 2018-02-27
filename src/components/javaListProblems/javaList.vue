@@ -33,7 +33,7 @@
                   <el-button size="small">浏览次数</el-button>
                 </el-badge>
 
-                <el-badge style="margin-top: 0.3em; margin-bottom:0.2em;" :value="200" :max="99" class="item">
+                <el-badge style="margin-top: 0.3em; margin-bottom:0.2em;" :value=item.numberComments :max="99" class="item">
                   <el-button size="small">评论次数</el-button>
                 </el-badge>
               </el-col>
@@ -41,15 +41,15 @@
               <el-col :span="17">
                 <span style="font-size:1.05em;">{{item.title}}</span>
                 <br/>
-                <span style="font-size:0.8em;">{{filterHtml(item.showContent) }}</span>
+                <span style="font-size:0.8em;">{{$Const.gxSubstring($Const.filterHtml(item.showContent),0,100)}}</span>
               </el-col>
 
               <el-col :span="4">
                 <el-tooltip class="item" effect="dark" :content="item.creator+''" placement="top-start">
-                <el-button size="mini" >发帖人: {{substring(item.creator,0,6)}}</el-button>
+                <el-button size="mini" >发帖人: {{$Const.gxSubstring(item.creator,0,6)}}</el-button>
                 </el-tooltip>
                 <br/>
-                <div style="font-size:1.05em; margin-top:0.5em;" >{{formatDateTime(item.creationtime)}}</div>
+                <div style="font-size:1.05em; margin-top:0.5em;" >{{$Const.formatDateTime(item.creationtime)}}</div>
               </el-col>
               </div>
             </el-row>
@@ -164,62 +164,58 @@ export default {
         result = false
       }
       if(result){
-      this.postAjax(this.post,'iProblem/insert/Problem');
+      this.$Const.doPost('iProblem/insert/Problem',this.post,this.returnSbmitPost)
       }
-    },
-    postAjax (data,url,callback) {
-   var result;
-     this.$ajax({
-        method: 'post',
-        url: 'http://192.168.0.102:9000/'+url,
-        data: JSON.stringify(data),
-       dataType: "json",
-       async:false,
-      }).then(function(res){
-       callback(res.data)
-     }).catch(function(err){
-       })
     },
     closePost () { // 清空文本
       this.editor.txt.clear()
     },
-    shouProblem(data){
-      this.problems=data.list;
-      this.totalCount=data.totalCount;
+    shouProblem(stats,data){
+      if(stats==200 &&  data!=null){
+        this.problems=data.list;
+        this.totalCount=data.totalCount;
+      }else{
+        this.$notify.error({
+          title: '警告',
+          message: '获取数据失败'
+        })
+      }
     },
-    filterHtml(str){
-      var reg=/<[^<>]+>/g;
-      return str.replace(reg,'');
+    returnSbmitPost(stats,data){
+      if(stats=200){
+        this.editor.txt.clear();
+        this.visible2 = false;
+         this.dialogVisible=false;
+        this.$message({
+          message: '发帖成功',
+          type: 'success'
+        });
+        this.problems.push({
+          id:data,
+          title:this.post.title,
+          creationtime:new Date().getTime(),
+          showContent:this.post.showContent,
+          money:this.post.money
+        })
+      }else{
+        this.$notify.error({
+          title: '警告',
+          message: '保存数据失败'
+        })
+      }
+
     },
-     formatDateTime(timeStamp) {
-      var date = new Date();
-      date.setTime(timeStamp);
-      var y = date.getFullYear();
-      var m = date.getMonth() + 1;
-      m = m < 10 ? ('0' + m) : m;
-      var d = date.getDate();
-      d = d < 10 ? ('0' + d) : d;
-      var h = date.getHours();
-      h = h < 10 ? ('0' + h) : h;
-      var minute = date.getMinutes();
-      var second = date.getSeconds();
-      minute = minute < 10 ? ('0' + minute) : minute;
-      second = second < 10 ? ('0' + second) : second;
-      return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
-    },
-    substring(str,indexA,indexB) {
-      str=str+""
-      return str.substring(indexA,indexB)
-    },
+
    openProblem(problemId){
-     this.$router.push({name :'problemId',path :'/problem/javaList/contentProblem',params :{problemId:problemId}})
+     this.$Const.localStoreObj.setkeyVal('problemId',problemId);
+     this.$router.push({name :'problemId',path :'/problem/javaList/contentProblem'})
    },
     pageSelect(id){
       this.problem.page=id;
       this.initSelect();
     },
    initSelect(){
-     this.postAjax(this.problem,'iProblem/selectAll/Problem',this.shouProblem);
+     this.$Const.doPost('iProblem/selectAll/Problem',this.problem,this.shouProblem)
    }
 },
   mounted () {
