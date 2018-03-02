@@ -1,11 +1,6 @@
 <template>
-  <el-container>
-    <el-header  height="5em">
-      标题
-       </el-header>
-
-    <el-main>
-      <div class="mainheight">
+  <el-container >
+      <div class="mainheight" style="margin-top: 5em">
         <el-row>
           <el-col :span="12">
             <el-radio size="mini" v-model="solve" label="noSolved">未解决的问题</el-radio>
@@ -25,7 +20,7 @@
 
         <el-row>
         <el-col  class="background" :span="24" v-for="(item,index) in problems" :key="index">
-          <div class="problemSize">
+          <div class="problemSize" style="min-width:70em;">
 
             <el-row>
               <el-col :span="3">
@@ -57,9 +52,9 @@
         </el-col>
 
       </el-row>
+        <el-footer><el-pagination background layout="prev, pager, next" :total="totalCount" :pageSize=problem.limit  @current-change="pageSelect"> </el-pagination></el-footer>
       </div>
-    </el-main>
-    <el-footer><el-pagination background layout="prev, pager, next" :total="totalCount" :pageSize=problem.limit  @current-change="pageSelect"> </el-pagination></el-footer>
+
     <el-dialog :visible.sync="dialogVisible"  width="80em"  :close-on-press-escape=false :close-on-click-modal=false>
       <el-row>
         <el-col :span="24">
@@ -74,7 +69,7 @@
         <div id="div1" class="toolbar">
         </div>
         <div style="padding: 5px 0; color: #ccc"></div>
-        <div id="div2" style="min-height: 35em;"> <!--可使用 min-height 实现编辑区域自动增加高度-->
+        <div id="div2" style="min-height: 35em; text-align:left;border:0.5em solid #96c2f1; "> <!--可使用 min-height 实现编辑区域自动增加高度-->
           <p>请输入内容</p>
         </div>
         <el-row>
@@ -113,7 +108,9 @@ export default {
       post: {
         money: '', // 发帖的金额
         showContent: '', // 发帖内容
-        title: '' // 提问帖子的标题
+        title: '', // 提问帖子的标题
+        creator:null, //发帖人
+        problemType : 'Servlet'
       },
       problem : { // 查询条件
          id:'', //主键
@@ -127,9 +124,17 @@ export default {
   },
   methods: {
     openQuestionPage () {
-      this.dialogVisible = true
-      if (this.editor == null) {
-        this.createEditor()
+      //先判断是否登陆
+      if(this.$Const.isLogin()){
+        this.dialogVisible = true
+        if (this.editor == null) {
+          this.createEditor()
+        }
+      }else{
+        this.$message({
+          message: '登陆后才能发帖，登陆按钮在右上角',
+          type: 'warning'
+        });
       }
     },
 
@@ -144,45 +149,47 @@ export default {
     sbmitPost () {
       var result=true;
       if (this.post.title.length === 0) {
-        this.$notify.error({
-          title: '警告',
-          message: '发帖必须填写标题'
-        })
+        this.$message({
+          message: '发帖必须填写标题',
+          type: 'warning'
+        });
         result = false
         // 金额不能为空
       } else if (this.post.money.length === 0) {
-        this.$notify.error({
-          title: '警告',
-          message: '发帖必须填写标题发帖必须填写金额'
-        })
+        this.$message({
+          message: '发帖必须填写标题发帖必须填写金额',
+          type: 'warning'
+        });
         result = false
       } else if (this.editor.txt.text().length === 0) {
-        this.$notify.error({
-          title: '警告',
-          message: '发帖必须填写标题发帖必须填写内容'
-        })
+        this.$message({
+          message: '发帖必须填写标题发帖必须填写内容',
+          type: 'warning'
+        });
         result = false
       }
       if(result){
+      let user=this.$Const.localStoreObj.getUser()
+      this.post.creator=user.id;
       this.$Const.doPost('iProblem/insert/Problem',this.post,this.returnSbmitPost)
       }
     },
     closePost () { // 清空文本
       this.editor.txt.clear()
     },
-    shouProblem(stats,data){
-      if(stats==200 &&  data!=null){
-        this.problems=data.list;
-        this.totalCount=data.totalCount;
+    shouProblem(data){
+      if(data.status==200){
+        this.problems=data.obj.list;
+        this.totalCount=data.obj.totalCount;
       }else{
         this.$notify.error({
           title: '警告',
-          message: '获取数据失败'
+          message:data.msg
         })
       }
     },
-    returnSbmitPost(stats,data){
-      if(stats=200){
+    returnSbmitPost(data){
+      if(data.status==200){
         this.editor.txt.clear();
         this.visible2 = false;
          this.dialogVisible=false;
@@ -191,7 +198,7 @@ export default {
           type: 'success'
         });
         this.problems.push({
-          id:data,
+          id:data.obj,
           title:this.post.title,
           creationtime:new Date().getTime(),
           showContent:this.post.showContent,
@@ -200,7 +207,7 @@ export default {
       }else{
         this.$notify.error({
           title: '警告',
-          message: '保存数据失败'
+          message:data.msg
         })
       }
 
@@ -227,21 +234,9 @@ export default {
 }
 </script>
 <style scoped>
-  .el-header {
-    background-color: #EBEEF5;
-    color: #333;
-    text-align: center;
-    line-height: 8em;
-  }
-  .el-main {
-    color: #333;
-    text-align: center;
-    line-height: 1.5em;
-  }
   .problemSize{
     margin-top: 0.5em;
     border-bottom:1px dashed #000;
-
   }
   .mainheight{
     height:42em;

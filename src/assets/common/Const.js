@@ -8,6 +8,10 @@ import router from '../../router'
  */
 let Const = {}
 
+let userKey="asdasdsafasdfasdfsad";
+
+let IsLgoin=false;
+
 let serverInfo = {
   // proUrl: 'http://www.imasion-gms.com/gms',
   testUrl: 'http://192.168.0.102:9000/',
@@ -18,7 +22,6 @@ let constKey = {
 
 }
 axios.defaults.baseURL = serverInfo.testUrl
-axios.defaults.timeout = 2000
 
 let jsonRequest = axios.create({})
 jsonRequest.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
@@ -35,9 +38,9 @@ let websocket = null*/
 function doPost (uri, params, callback) {
   jsonRequest.post(uri, params).then(function (res) {
     if(callback!=null)
-    callback(res.status, res.data)
+    callback(res.data)
   }).catch(function (res) {
-    callback(res.status, res.data)
+    callback(res.data)
   })
 }
 function nonEmpty(str){
@@ -46,6 +49,17 @@ function nonEmpty(str){
   }else{
     return true
   }
+}
+function getIsLogin (){
+  return IsLgoin;
+}
+/**
+ * 判断一个数是不是整型
+ * @param x
+ * @returns {boolean}
+ */
+function isInteger(x) {
+  return x % 1 === 0;
 }
 /**
  * 根据时间戳返回格式化的时间
@@ -103,14 +117,16 @@ var localStoreObj = {
  * @param userobj
  */
 setUser:function setUser (userobj) {
-
+  IsLgoin=true;
+  localStore.set(userKey, userobj);
 },
 
 /**
  * 清除用户信息
  */
 clearUser:function clearUser () {
-
+  IsLgoin=false;
+  return localStore.remove(userKey)
 },
 
 /**
@@ -118,13 +134,14 @@ clearUser:function clearUser () {
  * @returns {*}
  */
 getUser:function getUser () {
-
+  return localStore.get(userKey)
 },
 
 /**
  * 消除所有的缓存
  */
 clearlocalStore:function clearlocalStore () {
+  IsLgoin=false;
   localStore.clearAll()
 },
 
@@ -257,6 +274,8 @@ Const.install = function (Vue, options) {
     gxSubstring:substring,
     localStoreObj:localStoreObj,
     nonEmpty:nonEmpty,
+    isInteger:isInteger,
+    isLogin:getIsLogin,
   }
   Vue.prototype.$Const = _const
 }
