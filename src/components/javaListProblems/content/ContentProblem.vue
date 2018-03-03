@@ -30,7 +30,13 @@
                     <div  :id="data.id" v-html="data.showContent" style="min-height: 15em;">
 
                     </div>
-                    <img src="../../../assets/images/resolved.png" />
+
+                    <div  v-if="data.problemstate == 'resolved'">
+                      <img  src="../../../assets/images/resolved.png" />
+                    </div>
+                    <div v-else>
+                      <img  src="../../../assets/images/unsolved.png" />
+                    </div>
                   </el-col>
               </el-row>
               </div>
@@ -176,7 +182,6 @@
           })
           return;
         }
-
         if(this.data.creator != this.$Const.localStoreObj.getUser().id){
           this.$notify.error({
             title: '警告',
@@ -184,7 +189,7 @@
           })
           return;
         }
-        this.$Const.doPost('iProblem/Problem/saveProblemreply',this.problemreply,this.sbmitReplyPost)
+      this.$Const.doPost('iProblem/Problem/saveReplyAdopt',this.problemreply,null)
       },
 
     },
