@@ -10,10 +10,17 @@ let Const = {}
 
 let userKey="asdasdsafasdfasdfsad";
 
+
+
+
 let serverInfo = {
   // proUrl: 'http://www.imasion-gms.com/gms',
   testUrl: 'http://192.168.0.102:9000/',
 }
+
+let userPortraitAddress= 'http://192.168.0.102:9000/user/readFileHandler?portrait=';
+
+let savePortraitAddress= 'http://192.168.0.102:9000/firmware/save';
 
 /** 常量键 */
 let constKey = {
@@ -274,6 +281,8 @@ Const.install = function (Vue, options) {
     nonEmpty:nonEmpty,
     isInteger:isInteger,
     isLogin:getIsLogin,
+    userPortrait:userPortraitAddress,
+    saveUserPortrait:savePortraitAddress,
   }
   Vue.prototype.$Const = _const
 }

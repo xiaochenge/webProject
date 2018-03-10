@@ -34,7 +34,7 @@
               <el-input v-model="user.loginname" placeholder="登陆名"></el-input>
             </el-form-item>
             <el-form-item label="登陆密码 *" prop="password">
-              <el-input v-model="user.password" placeholder="登陆密码"></el-input>
+              <el-input v-model="user.password" type="password" placeholder="登陆密码"></el-input>
             </el-form-item>
             <el-form-item label="性别 *" prop="sex">
               <el-radio v-model="sex" label="man">小可爱</el-radio>
