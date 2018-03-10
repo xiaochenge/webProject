@@ -52,7 +52,7 @@
         </el-col>
 
       </el-row>
-        <el-footer><el-pagination background layout="prev, pager, next" :total="totalCount" :pageSize=problem.limit  @current-change="pageSelect"> </el-pagination></el-footer>
+        <el-footer style="margin-top: 2em;"><el-pagination background layout="total,prev, pager, next" :total="totalCount" :pageSize=problem.limit  @current-change="pageSelect"> </el-pagination></el-footer>
       </div>
 
     <el-dialog :visible.sync="dialogVisible"  width="80em"  :close-on-press-escape=false :close-on-click-modal=false>

@@ -22,7 +22,7 @@
                          楼主
                       </div>
                       <div style="margin-top: 1em;">
-                        昵称 : 阿萨大爱
+                        昵称 : {{data.creatorName}}
                       </div>
                     </div>
                   </el-col>
@@ -45,12 +45,10 @@
           <!-- 这一列回答，此处需要循环和分页 -->
           <el-col :span="24" v-for="(item, index) in data.problemreplys" :key="index">
             <div class="huifutou">
-              <div style="padding-bottom: 0.2em;padding-top: 0.2em;min-height: 1.5em;">
+              <div style="padding-bottom: 0.2em;padding-top: 0.2em;min-height: 1.5em;padding-left: 10em">
                 <div>
-
-                <el-button  type="success" size="mini" plain @click="Adopt()">采纳</el-button>
-                <el-button  type="success" size="mini" plain @click="">公开</el-button>
-                <el-button type="success" size="mini" plain @click="">点赞</el-button>
+                <el-button   v-if="data.problemstate != 'resolved'" type="success" size="mini" plain @click="Adopt(item.id)">采纳</el-button>
+                <el-button type="success" size="mini" plain @click="SupportReply(item.id)">点赞</el-button>
                 </div>
               </div>
             </div>
@@ -63,16 +61,14 @@
                   <el-col :span="4" >
                     <div style="min-height: 15em;margin-top: 2em;">
                       <img class="shadow" src="../../../assets/images/touxiang.jpg" />
-                    {{item.creator}}
                       <div style="margin-top: 1em;">
-                        昵称 : 阿萨大爱
+                        昵称 :    {{item.creatorName}}
                       </div>
                     </div>
                   </el-col>
                   <el-col :span="20">
-                    <div style="border-left:1px dashed #000; min-height: 15em;">
-                      <div :id="item.id" v-html="item.showContent"></div>
-
+                    <div style="border-left:1px dashed #000; min-height: 15em;line-height: 1.6em;">
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <span :id="item.id" v-html="item.showContent">  </span>
                     </div>
                   </el-col>
                 </el-row>
@@ -117,6 +113,7 @@
           problemId:null,  //帖子id
           parent:null,   //此回复的父id
           showContent:null,  //回复的内容
+          creator:null, //登陆idnull
         },
 
       }
@@ -141,16 +138,17 @@
       },
       //提交回复
       sbmitPost () {
-        var html=this.editorReply.txt.html();
+        var html=this.editorReply.txt.text();
         var str1= this.$Const.nonEmpty(html);
         var str2= this.$Const.nonEmpty(this.problemreply.problemId)
-        if(str1 && str2){
+        if(str1 && str2 && this.$Const.isLogin()){
           this.problemreply.showContent=html;
+          this.problemreply.creator=this.$Const.localStoreObj.getUser().id;
           this.$Const.doPost('iProblem/Problem/saveProblemreply',this.problemreply,this.sbmitReplyPost)
         }else{
           this.$notify.error({
             title: '警告',
-            message:data.msg
+            message:'请您填写回复内容或者先登陆再进行回复'
           })
         }
       },
@@ -163,7 +161,11 @@
         this.data.problemreplys.push({
           id:data.obj,
           showContent:this.problemreply.showContent,
-        })
+        });
+          this.$message({
+            message: '成功回复',
+            type: 'success'
+          });
        this.closePost();
       }else{
           this.$notify.error({
@@ -174,7 +176,7 @@
       },
 
       //采纳本条回复
-      Adopt (){
+      Adopt (id){
         if(!this.$Const.isLogin()){
           this.$notify.error({
             title: '警告',
@@ -189,8 +191,53 @@
           })
           return;
         }
-      this.$Const.doPost('iProblem/Problem/saveReplyAdopt',this.problemreply,null)
+        let param={
+          id:id,
+          problemid:this.problemreply.problemId,  //帖子id
+          problemUserId:this.data.creator,
+        }
+      this.$Const.doPost('iProblem/Problem/saveReplyAdopt',param,this.AdoptSuccess)
       },
+
+      AdoptSuccess(data){
+        if(data.status==200){
+          this.$message({
+          message: '以成功采纳此回复',
+          type: 'success'
+          });
+        this.data.problemstate='resolved';
+        }else{
+          this.$notify.error({
+            title: '警告',
+            message:data.msg
+          })
+        }
+
+      },
+      /**
+       * 点赞某条回复
+       * @constructor
+       */
+        SupportReply(id){
+        this.$Const.doPost('iProblem/Problem/SupportReply',{'id':id },this.returnSupportReply)
+       },
+
+      /**
+       * 点赞成功回调
+       */
+      returnSupportReply(data){
+        if(data.status==200){
+          this.$message({
+            message: '感谢您的点赞支持',
+            type: 'success'
+          });
+        }else{
+          this.$notify.error({
+            title: '警告',
+            message:data.msg
+          })
+        }
+      }
 
     },
     mounted () {

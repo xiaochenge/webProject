@@ -10,8 +10,6 @@ let Const = {}
 
 let userKey="asdasdsafasdfasdfsad";
 
-let IsLgoin=false;
-
 let serverInfo = {
   // proUrl: 'http://www.imasion-gms.com/gms',
   testUrl: 'http://192.168.0.102:9000/',
@@ -51,7 +49,7 @@ function nonEmpty(str){
   }
 }
 function getIsLogin (){
-  return IsLgoin;
+  return localStoreObj.getUser()==null?false:true;
 }
 /**
  * 判断一个数是不是整型
@@ -88,6 +86,9 @@ function formatDateTime(timeStamp) {
  * @param str
  */
 function filterHtml(str){
+  if(str==null){
+    return '暂无数据'
+  }
   var reg=/<[^<>]+>/g;
   return str.replace(reg,'');
 }
@@ -117,7 +118,6 @@ var localStoreObj = {
  * @param userobj
  */
 setUser:function setUser (userobj) {
-  IsLgoin=true;
   localStore.set(userKey, userobj);
 },
 
@@ -125,7 +125,6 @@ setUser:function setUser (userobj) {
  * 清除用户信息
  */
 clearUser:function clearUser () {
-  IsLgoin=false;
   return localStore.remove(userKey)
 },
 
@@ -141,7 +140,6 @@ getUser:function getUser () {
  * 消除所有的缓存
  */
 clearlocalStore:function clearlocalStore () {
-  IsLgoin=false;
   localStore.clearAll()
 },
 

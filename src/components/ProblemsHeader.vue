@@ -5,10 +5,15 @@
           <el-button type="info" icon="el-icon-arrow-left">向后</el-button>
           <el-button type="info">向前<i class="el-icon-arrow-right el-icon&#45;&#45;right"></i></el-button>
         </el-button-group>-->
-        <div v-if='loginState' style="float: right; padding-top:0.7em; padding-bottom: 1em; padding-right: 3em">
+
+        <el-tooltip class="item" effect="dark" content="点击进入个人中心" placement="top-start">
+          <el-button style="padding-top: 0.8em;float: left; margin-left: 55em;" type="text" @click="userHomePage">欢迎您 : asdklj askldj </el-button>
+        </el-tooltip>
+
+        <div v-if='loginState' style="float: right; padding-bottom: 2em; padding-right: 3em">
           <el-button   type="warning" @click="updateLoginState">退出</el-button>
         </div>
-        <div v-else style="float: right; padding-top:0.7em; padding-bottom: 1em; padding-right: 3em" >
+        <div v-else style="float: right;padding-bottom: 2em; padding-right: 3em" >
           <el-button   type="success" @click="loginUterVisible = true">登陆</el-button>
           <el-button    type="success"  plain  @click="outerVisible = true">点击注册</el-button>
         </div>
@@ -18,7 +23,7 @@
         <el-button type="success" @click="register(false)">快速注册</el-button>
       </el-tooltip>
 
-      <el-tooltip class="item" effect="dark" content="请注意填写收款账号，参与回帖一旦采纳赏金直接打入您的账户" placement="top">
+      <el-tooltip class="item" effect="dark" content="请注意gv填写收款账号，参与回帖一旦采纳赏金直接打入您的账户" placement="top">
         <el-button type="success" @click="register(true)">完整注册</el-button>
       </el-tooltip>
       <el-dialog width="42em"  :title="registerTitle" :visible.sync="innerVisible" append-to-body center>
@@ -193,6 +198,10 @@
         this.loginState=false;
         this.$Const.localStoreObj.clearUser();
       },
+      userHomePage () {
+   //     this.$router.push({name :'javaList',path :'/user/homepage'})
+        window.open("/user/homepage")
+      },
 
       //提交注册
       submitForm(formName) {
@@ -282,8 +291,6 @@
   width: 75%;
   left: 12.25%;
   top: 0em;
-}
-.mainheight{
-height:42em;
+  height: 5em;
 }
 </style>

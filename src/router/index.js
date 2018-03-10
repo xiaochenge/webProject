@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
+import homepage from '@/components/user/homepage'
 import javaList from '@/components/javaListProblems/javaList'
 import contentProblem from '@/components/javaListProblems/content/ContentProblem'
 import problemsHeader from '@/components/ProblemsHeader'
@@ -15,6 +16,11 @@ export default new Router({
       path: '/',
       name: 'HelloWorld',
       component: HelloWorld
+    },
+    {
+      path: '/user/homepage',
+      name: 'homepage',
+      component: homepage
     },
     {
       path: '/problemsHeader',
