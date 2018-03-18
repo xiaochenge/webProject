@@ -1,19 +1,19 @@
 <template>
   <div>
-      <el-card class="el-header box-card">
+      <el-card class="el-header box-card" :body-style="{ padding: '0px' }">
 <!--        <el-button-group style="float: left; padding-bottom: 1em;  padding-left:9em;">
           <el-button type="info" icon="el-icon-arrow-left">向后</el-button>
           <el-button type="info">向前<i class="el-icon-arrow-right el-icon&#45;&#45;right"></i></el-button>
         </el-button-group>-->
 
         <el-tooltip class="item" effect="dark" content="点击进入个人中心" placement="top-start">
-          <el-button style="padding-top: 0.8em;float: left; margin-left: 55em;" type="text" @click="userHomePage">欢迎您 : asdklj askldj </el-button>
+          <el-button v-if="$Const.isLogin()" style="margin-left:59%;margin-top: 1%;" type="text" @click="userHomePage">欢迎您 : {{ $Const.localStoreObj.getUser().username  }} </el-button>
         </el-tooltip>
 
-        <div v-if='loginState' style="float: right; padding-bottom: 2em; padding-right: 3em">
+        <div v-if='loginState' style="float: right;margin-top:1%;margin-right: 3.5%;">
           <el-button   type="warning" @click="updateLoginState">退出</el-button>
         </div>
-        <div v-else style="float: right;padding-bottom: 2em; padding-right: 3em" >
+        <div v-else style="float: right;margin-top:1%;margin-right: 3.5%;" >
           <el-button   type="success" @click="loginUterVisible = true">登陆</el-button>
           <el-button    type="success"  plain  @click="outerVisible = true">点击注册</el-button>
         </div>
@@ -29,7 +29,7 @@
       <el-dialog width="42em"  :title="registerTitle" :visible.sync="innerVisible" append-to-body center>
         <!--这里填写内层div信息-->
         <el-card class="box-card" >
-          <el-form :model="user" label-position="left" label-width="18%"  ref="user" :rules="rules">
+          <el-form :model="user"  label-position="left" label-width="38%"  ref="user" :rules="rules">
             <el-form-item label="登录名 *" prop="loginname">
               <el-input v-model="user.loginname" placeholder="登陆名"></el-input>
             </el-form-item>
@@ -240,6 +240,7 @@
            type: 'success'
          });
         //用户信息缓存
+         this.user=data.obj;
           this.$Const.localStoreObj.setUser(data.obj);
        }else{
          this.$notify.error({
@@ -289,7 +290,7 @@
   position:fixed;
   z-index:10;
   width: 75%;
-  left: 12.25%;
+  left: 13%;
   top: 0em;
   height: 5em;
 }

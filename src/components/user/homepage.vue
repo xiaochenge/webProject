@@ -3,7 +3,7 @@
     <el-header height="18em" style="z-index:2;"></el-header>
     <el-card :body-style="{ padding: '0px' }" class="portrait">
       <div style="padding: 1px;" >
-        <img class="shadow" :src=this.$Const.userPortrait+this.user.portrait  >
+        <img class="shadow" :src=this.$Const.userPortrait+this.user.portrait >
       </div>
     </el-card>
     <div class="mainTop">
@@ -145,8 +145,6 @@
         }
       };
       return {
-        imageUrl: '',
-
         innerVisible:false,
         findMyProblem: null,
         problems: null,
@@ -242,7 +240,8 @@
        * @param file
        */
       handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+       // this.imageUrl = URL.createObjectURL(file.raw);
+        this.user.portrait=file.response;
       },
       /**
        * 修改个人资料
@@ -315,7 +314,7 @@
 .portrait{
   z-index:10;
   left:24%;
-  top:23%;
+  top:24%;
   position:absolute;
 }
   img.shadow{

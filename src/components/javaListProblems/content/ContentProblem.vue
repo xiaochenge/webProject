@@ -28,14 +28,14 @@
                   </el-col>
                   <el-col :span="20" style="background-color:#F5F8FB;border-left:1px solid #C3DFFC;">
                     <div  :id="data.id" v-html="data.showContent" style="min-height: 15em;">
-
                     </div>
-
                     <div  v-if="data.problemstate == 'resolved'">
-                      <img  src="../../../assets/images/resolved.png" />
+                      <img style="display:inline-block;" src="../../../assets/images/resolved.png" />
+                      <div style="float: right; margin-right: 0.7em;position: relative;top: 2em; "> <a href="#go"><el-button >回复问题</el-button></a></div>
                     </div>
                     <div v-else>
-                      <img  src="../../../assets/images/unsolved.png" />
+                      <img  style="display:inline-block;" src="../../../assets/images/unsolved.png" />
+                      <div style="float: right; margin-right: 0.7em;position: relative;top: 2em; "> <a href="#go"><el-button >回复问题</el-button></a></div>
                     </div>
                   </el-col>
               </el-row>
@@ -48,7 +48,7 @@
               <div style="padding-bottom: 0.2em;padding-top: 0.2em;min-height: 1.5em;padding-left: 10em">
                 <div>
                 <el-button   v-if="data.problemstate != 'resolved'" type="success" size="mini" plain @click="Adopt(item.id)">采纳</el-button>
-                <el-button type="success" size="mini" plain @click="SupportReply(item.id)">点赞</el-button>
+                <el-button type="success" size="mini"  plain @click="SupportReply(item.id)">点赞</el-button>
                 </div>
               </div>
             </div>
@@ -66,10 +66,27 @@
                       </div>
                     </div>
                   </el-col>
-                  <el-col :span="20">
-                    <div style="border-left:1px dashed #000; min-height: 15em;line-height: 1.6em;">
-                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <span :id="item.id" v-html="item.showContent">  </span>
+                  <el-col :span="20" style="border-left:1px dashed #000;">
+
+                    <div style="min-height: 15em;line-height: 1.6em;  background-color:#F5F8FB; border-bottom:1px solid #C3DFFC;">
+                      &nbsp;<span :id="item.id" v-html="item.showContent"></span>
                     </div>
+
+                    <div style="border-bottom:1px solid #303133;font-size:0.75em;">
+                    <div >
+                      <el-button style="float: left;margin-left: 1.5em;" type="text">昵称12312 :</el-button>
+                      <div style="line-height: 1.8em;">啊实打实看了觉得拉萨孔家店可拉斯基快乐dasdasd大时代加爱上了大家可拉斯基的卢卡斯就的卢卡斯dasdassd大苏打似的asdasd大苏打实打实大苏打发的风格现场v白色的礼服螺丝钉解放螺丝钉就开了房间下次就考虑划时代艰苦好空间尽快就断开连接看来大家啊是快乐大家可拉斯基地理空间考虑将考虑将圣诞节分厘卡圣诞节风口浪尖离开
+                      <div style="text-align:right"> 1990-12-08  23:33 <el-button size="mini" style="margin-bottom: 0.5em;margin-left:2em; margin-right:1em;" round> 回复</el-button></div>
+                      </div>
+                    </div>
+                    </div>
+
+
+
+                    <div class="huifu">
+                      <el-button size="mini" round>我来说一句</el-button>
+                    </div>
+
                   </el-col>
                 </el-row>
               </div>
@@ -82,10 +99,10 @@
           <el-button @click="sbmitPost" type="primary">提交回复</el-button>
         </div>
         <div style="padding: 5px 0; color: #ccc"></div>
-        <div id="div4" style="min-height:15em; padding:1em;border:0.5em solid #96c2f1; background:#eff7ff; text-align:left;"> <!--可使用 min-height 实现编辑区域自动增加高度-->
-          <p>请输入内容</p>
+        <div name="go" id="div4" style="min-height:15em; padding:1em;border:0.5em solid #96c2f1; background:#eff7ff; text-align:left;"> <!--可使用 min-height 实现编辑区域自动增加高度-->
+          <p >请输入内容</p>
         </div>
-
+      <a name="go"></a>
     </div>
 
   </el-container>
@@ -295,6 +312,11 @@
 .ziti{
   font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
 }
-
+.huifu{
+  text-align:right;
+  margin-right: 0.3em;
+  margin-bottom: 0.3em;
+  margin-top: 0.3em;
+}
 
 </style>
