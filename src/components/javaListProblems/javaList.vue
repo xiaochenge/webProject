@@ -1,6 +1,6 @@
 <template>
   <el-container >
-      <div class="mainheight" style="margin-top: 5em">
+      <div class="mainheight" style="margin-top: 5em;width: 80em;" v-loading.fullscreen.lock="fullscreenLoading">
         <el-row>
           <el-col :span="12">
             <el-radio size="mini" v-model="solve" label="noSolved">未解决的问题</el-radio>
@@ -9,7 +9,7 @@
 
           <el-col :span="8"  style=" margin-bottom:0.2em;">
             <el-input v-model="textCondition" placeholder="按条件查询(功能暂未实现)" style="width:15em "></el-input>
-            <el-button type="primary" icon="el-icon-search">搜索</el-button>
+
           </el-col>
 
           <el-col :span="4" style=" margin-bottom:1em;">
@@ -52,7 +52,17 @@
         </el-col>
 
       </el-row>
+        <div v-if="totalCount > 0">
         <el-footer style="margin-top: 2em;"><el-pagination background layout="total,prev, pager, next" :total="totalCount" :pageSize=problem.limit  @current-change="pageSelect"> </el-pagination></el-footer>
+        </div>
+        <div v-else style="margin-left:auto;margin-right:auto">
+          <el-alert
+            title="暂无数据"
+            :closable="false"
+            center
+            type="info">
+          </el-alert>
+        </div>
       </div>
 
     <el-dialog :visible.sync="dialogVisible"  width="80em"  :close-on-press-escape=false :close-on-click-modal=false>
@@ -100,6 +110,7 @@ export default {
   name: 'HelloWorld',
   data () {
     return {
+      fullscreenLoading:false,
       dialogVisible: true,
       visible2: false,
       solve: 'noSolved',
@@ -178,6 +189,7 @@ export default {
       this.editor.txt.clear()
     },
     shouProblem(data){
+      this.fullscreenLoading=false;
       if(data.status==200){
         this.problems=data.obj.list;
         this.totalCount=data.obj.totalCount;
@@ -226,6 +238,7 @@ export default {
    }
 },
   mounted () {
+    this.fullscreenLoading=true;
     this.dialogVisible = false
    this.initSelect();
 

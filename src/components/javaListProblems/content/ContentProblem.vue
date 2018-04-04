@@ -48,7 +48,9 @@
               <div style="padding-bottom: 0.2em;padding-top: 0.2em;min-height: 1.5em;padding-left: 10em">
                 <div>
                 <el-button   v-if="data.problemstate != 'resolved'" type="success" size="mini" plain @click="Adopt(item.id)">采纳</el-button>
-                <el-button type="success" size="mini"  plain @click="SupportReply(item.id)">点赞</el-button>
+                  <el-badge :value="item.supportNumber" class="item">
+                   <el-button type="success" size="mini"  plain @click="SupportReply(item.id,item.supportNumber++)">点赞</el-button>
+                  </el-badge>
                 </div>
               </div>
             </div>
@@ -72,26 +74,26 @@
                       &nbsp;<span :id="item.id" v-html="item.showContent"></span>
                     </div>
 
-                    <div style="border-bottom:1px solid #303133;font-size:0.75em;">
-                    <div >
-                      <el-button style="float: left;margin-left: 1.5em;" type="text">昵称12312 :</el-button>
-                      <div style="line-height: 1.8em;">啊实打实看了觉得拉萨孔家店可拉斯基快乐dasdasd大时代加爱上了大家可拉斯基的卢卡斯就的卢卡斯dasdassd大苏打似的asdasd大苏打实打实大苏打发的风格现场v白色的礼服螺丝钉解放螺丝钉就开了房间下次就考虑划时代艰苦好空间尽快就断开连接看来大家啊是快乐大家可拉斯基地理空间考虑将考虑将圣诞节分厘卡圣诞节风口浪尖离开
-                      <div style="text-align:right"> 1990-12-08  23:33 <el-button size="mini" style="margin-bottom: 0.5em;margin-left:2em; margin-right:1em;" round> 回复</el-button></div>
-                      </div>
+                    <div v-for="(replys, ind) in item.problemreplyList" :key="ind" style="font-size:0.75em;">
+                    <div>
+                        <span style="float: left;margin-left: 1.5em;margin-top: 0.6em;" >{{replys.creatorName}} ：</span>
+                        <div style="line-height: 1.8em;"> <span style="float: left;margin-left: 1.5em;margin-top: 0.6em;" >{{replys.showContent}}</span>
+                          <div style="text-align:right"> 1990-12-08  23:33
+                            <el-badge :value="replys.supportNumber" class="item">
+                              <el-button size="mini" style="margin-bottom: 0.5em;margin-right:1em;margin-top: 0.6em;" round  @click="SupportReply(replys.id),replys.supportNumber++"> 点赞</el-button>
+                            </el-badge>
+                          </div>
+                        </div>
                     </div>
-                    </div>
-
-
-
-                    <div class="huifu">
-                      <el-button size="mini" round>我来说一句</el-button>
-                    </div>
-
-                  </el-col>
-                </el-row>
-              </div>
-            </el-col>
-          </el-col>
+                </div>
+            <div class="huifu">
+              <el-button size="mini" round @click=" openhuifu(item)">我来说一句</el-button>
+            </div>
+        </el-col>
+        </el-row>
+        </div>
+        </el-col>
+    </el-col>
 
         </el-row>
 
@@ -99,12 +101,27 @@
           <el-button @click="sbmitPost" type="primary">提交回复</el-button>
         </div>
         <div style="padding: 5px 0; color: #ccc"></div>
-        <div name="go" id="div4" style="min-height:15em; padding:1em;border:0.5em solid #96c2f1; background:#eff7ff; text-align:left;"> <!--可使用 min-height 实现编辑区域自动增加高度-->
+        <div name="go" id="div4" style="min-height:15em; padding:1em;border:0.5em solid #96c2f1;text-align:left;"> <!--可使用 min-height 实现编辑区域自动增加高度-->
           <p >请输入内容</p>
         </div>
       <a name="go"></a>
     </div>
-
+    <el-dialog
+      :title="huifuTitle"
+      :visible.sync="dialogVisible1"
+      width="30%"
+      top="20em">
+      <el-input
+        type="textarea"
+        :autosize="{ minRows: 2, maxRows: 4}"
+        placeholder="请输入要回复的内容"
+        v-model="reply.showContent">
+      </el-input>
+      <span slot="footer" class="dialog-footer">
+                        <el-button @click="dialogVisible1 = false">取 消</el-button>
+                        <el-button type="primary" @click="handleSubmit">确 定</el-button>
+                      </span>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -114,6 +131,7 @@
   export default {
     data() {
       return {
+        dialogVisible1 : false,
         user : null,
         visible2:true,
         editorMain: null,
@@ -132,6 +150,13 @@
           showContent:null,  //回复的内容
           creator:null, //登陆idnull
         },
+        huifuTitle:'回复',
+        reply : {
+         showContent:'',//楼中楼回复的类容
+          problemid:'',//主帖id
+          parent:'',//上级评论id
+          creator:''//创建者
+        }
 
       }
     },
@@ -177,7 +202,9 @@
         if(data.status==200){
         this.data.problemreplys.push({
           id:data.obj,
+          creator:this.user.id,
           showContent:this.problemreply.showContent,
+          supportNumber:0,
         });
           this.$message({
             message: '成功回复',
@@ -212,6 +239,7 @@
           id:id,
           problemid:this.problemreply.problemId,  //帖子id
           problemUserId:this.data.creator,
+          creator:this.problemreply.creator,
         }
       this.$Const.doPost('iProblem/Problem/saveReplyAdopt',param,this.AdoptSuccess)
       },
@@ -236,7 +264,7 @@
        * @constructor
        */
         SupportReply(id){
-        this.$Const.doPost('iProblem/Problem/SupportReply',{'id':id },this.returnSupportReply)
+        this.$Const.doPost('iProblem/Problem/SupportReply',{'id':id},this.returnSupportReply)
        },
 
       /**
@@ -254,6 +282,47 @@
             message:data.msg
           })
         }
+      },
+      //提交楼中楼回复
+      handleSubmit(){
+        this.$Const.doPost('iProblem/Problem/saveProblemreply',this.reply,this.returnHandleSubmit)
+      },
+
+      //提交楼中楼回复,提交成功
+      returnHandleSubmit(data){
+        if(data.status==200){
+          this.dialogVisible1 = false;
+          this.$message({
+            message: '成功回复',
+            type: 'success'
+          });
+         let problemreplys=this.data.problemreplys;
+      for(let i=0;i<problemreplys.length;i++){
+        if(problemreplys[i].id==this.reply.parent){
+          problemreplys[i].problemreplyList.push({
+            id:data.obj,
+            creatorName:this.user.username,
+            showContent:this.reply.showContent,//楼中楼回复的类容
+            problemid:this.problemreply.problemId,//主帖id
+            parent:this.reply.parent,//上级评论id
+            creator:this.user.id//创建者
+          });
+        }
+      }
+        }else{
+          this.$notify.error({
+            title: '警告',
+            message:data.msg
+          })
+        }
+      },
+
+      //打开回复的面板
+      openhuifu(id){
+        this.reply.problemid=this.problemreply.problemId;
+        this.reply.parent=id.id,//上级评论id
+        this.reply.creator=this.user.id;
+        this.dialogVisible1 =true;
       }
 
     },
@@ -309,9 +378,7 @@
   margin-top:1em;
   line-height: 1.5em;
 }
-.ziti{
-  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
-}
+
 .huifu{
   text-align:right;
   margin-right: 0.3em;
