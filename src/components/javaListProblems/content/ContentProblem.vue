@@ -8,7 +8,7 @@
 
                 <div style="min-height: 1.5em;border-bottom:1px solid #000; ">
                   <div class="tiezibiaoti" >
-                    <h4 >这个问题问的ask来得及ask来得及爱睡懒觉非流动快速减肥dasdask来得及克拉斯积分这
+                    <h4 >{{data.title}}
                     </h4>
                   </div>
                 </div>
@@ -204,6 +204,7 @@
           id:data.obj,
           creator:this.user.id,
           showContent:this.problemreply.showContent,
+          problemreplyList:new Array(),
           supportNumber:0,
         });
           this.$message({
@@ -298,14 +299,17 @@
           });
          let problemreplys=this.data.problemreplys;
       for(let i=0;i<problemreplys.length;i++){
-        if(problemreplys[i].id==this.reply.parent){
+        if(problemreplys[i].id==this.reply.parent ){
+          if(problemreplys[i].problemreplyList == undefined)
+          problemreplys[i]['problemreplyList']=new Array();
           problemreplys[i].problemreplyList.push({
             id:data.obj,
             creatorName:this.user.username,
             showContent:this.reply.showContent,//楼中楼回复的类容
             problemid:this.problemreply.problemId,//主帖id
             parent:this.reply.parent,//上级评论id
-            creator:this.user.id//创建者
+            creator:this.user.id,//创建者
+            supportNumber:0
           });
         }
       }

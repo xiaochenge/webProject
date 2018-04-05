@@ -34,9 +34,10 @@
               </el-col>
               <div @click="openProblem(item.id)">
               <el-col :span="17">
-                <span style="font-size:1.05em;">{{item.title}}</span>
+              <span style="font-size:1.3em;">{{item.title}}</span>
                 <br/>
-                <span style="font-size:0.8em;">{{$Const.gxSubstring($Const.filterHtml(item.showContent),0,100)}}</span>
+                <br/>
+                <span style="font-size:0.9em;">{{$Const.gxSubstring($Const.filterHtml(item.showContent),0,100)}}</span>
               </el-col>
 
               <el-col :span="4">
@@ -141,6 +142,7 @@ export default {
         if (this.editor == null) {
           this.createEditor()
         }
+
       }else{
         this.$message({
           message: '登陆后才能发帖，登陆按钮在右上角',
@@ -155,6 +157,7 @@ export default {
       this.editor.customConfig.onchange = (html) => {
         this.post.showContent = html
       }
+      this.editor.customConfig.zIndex = 1000
       this.editor.create()
     },
     sbmitPost () {
@@ -202,20 +205,31 @@ export default {
     },
     returnSbmitPost(data){
       if(data.status==200){
-        this.editor.txt.clear();
         this.visible2 = false;
          this.dialogVisible=false;
         this.$message({
           message: '发帖成功',
           type: 'success'
         });
-        this.problems.push({
+        if(this.problems.length>0){
+        this.problems.splice(0,0,{
           id:data.obj,
           title:this.post.title,
           creationtime:new Date().getTime(),
           showContent:this.post.showContent,
-          money:this.post.money
+          money:this.post.money,
+          creator:this.$Const.localStoreObj.getUser().username
         })
+        }else{
+          this.problems.push({
+            id:data.obj,
+            title:this.post.title,
+            creationtime:new Date().getTime(),
+            showContent:this.post.showContent,
+            money:this.post.money,
+            creator:this.$Const.localStoreObj.getUser().username
+          })
+        }
       }else{
         this.$notify.error({
           title: '警告',

@@ -36,6 +36,9 @@
             <el-form-item label="登陆密码 *" prop="password">
               <el-input v-model="user.password" type="password" placeholder="登陆密码"></el-input>
             </el-form-item>
+            <el-form-item label="昵称" prop="username">
+              <el-input v-model="user.username" placeholder="不填写将自动生成奇怪的昵称"></el-input>
+            </el-form-item>
             <el-form-item label="性别 *" prop="sex">
               <el-radio v-model="sex" label="man">小可爱</el-radio>
               <el-radio v-model="sex" label="lady">小公举</el-radio>
@@ -50,9 +53,6 @@
               </el-form-item>
               <el-form-item label="e-mail" prop="email">
                 <el-input v-model="user.email" placeholder="电子邮箱"></el-input>
-              </el-form-item>
-              <el-form-item label="昵称" prop="username">
-                <el-input v-model="user.username" placeholder="不填写将自动生成奇怪的昵称"></el-input>
               </el-form-item>
               <el-form-item label="专业" prop="skill">
                 <el-input v-model="user.skill" placeholder="您是哪方面的专家"></el-input>

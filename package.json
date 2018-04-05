@@ -5,7 +5,7 @@
   "author": "421791582@qq.com <chenwu123>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --host 192.168.0.102",
+    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --host 120.77.81.109",
     "start": "npm run dev",
     "build": "node build/build.js"
   },

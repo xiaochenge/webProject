@@ -1,11 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
-import homepage from '@/components/user/homepage'
-import javaList from '@/components/javaListProblems/javaList'
-import contentProblem from '@/components/javaListProblems/content/ContentProblem'
-import problemsHeader from '@/components/ProblemsHeader'
-
+import HelloWorld from '@/components/HelloWorld.vue'
 
 Vue.use(Router)
 
@@ -20,22 +15,22 @@ export default new Router({
     {
       path: '/user/homepage',
       name: 'homepage',
-      component: homepage
+      component:  resolve => require(['../components/user/homepage.vue'], resolve),
     },
     {
       path: '/problemsHeader',
       name: 'problemsHeader',
-      component: problemsHeader,
+      component: resolve => require(['../components/ProblemsHeader.vue'], resolve),
       children:[
         {
           path: '/javaList',
           name: 'javaList',
-          component: javaList
+          component: resolve => require(['../components/javaListProblems/javaList.vue'], resolve),
         },
         {
           path: '/javaList/contentProblem',
           name: 'problemId',
-          component: contentProblem
+          component: resolve => require(['../components/javaListProblems/content/ContentProblem.vue'], resolve),
         }
       ]
     },
