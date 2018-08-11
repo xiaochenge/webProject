@@ -15,12 +15,12 @@ let userKey="asdasdsafasdfasdfsad";
 
 let serverInfo = {
   // proUrl: 'http://www.imasion-gms.com/gms',
-  testUrl: 'http://192.168.0.102:9000/',
+  testUrl: 'http://192.168.1.104:8080/',
 }
 
-let userPortraitAddress= 'http://192.168.0.102:9000/user/readFileHandler?portrait=';
+let userPortraitAddress= 'http://192.168.1.104:8080/user/readFileHandler?portrait=';
 
-let savePortraitAddress= 'http://192.168.0.102:9000/firmware/save';
+let savePortraitAddress= 'http://192.168.1.104:8080/firmware/save';
 
 /** 常量键 */
 let constKey = {
@@ -28,7 +28,10 @@ let constKey = {
 }
 axios.defaults.baseURL = serverInfo.testUrl
 
-let jsonRequest = axios.create({})
+let jsonRequest = axios.create({
+  headers: {'Content-Type': 'application/x-www-form-urlencoded'
+}
+});
 jsonRequest.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
 
 /*let webSocketURL = (process.env.NODE_ENV == 'production') ? serverInfo.websocketProUrl : serverInfo.websocketTestUrl
@@ -41,12 +44,26 @@ let websocket = null*/
  * @param callback
  */
 function doPost (uri, params, callback) {
-  jsonRequest.post(uri, params).then(function (res) {
+
+  axios.post(uri, params).then(function (res) {
+    if(callback!=null)
+      callback(res.data)
+  }).catch(function (res) {
+    callback({
+      status : '000',
+      msg : res.message
+    })
+  })
+
+/*  jsonRequest.post(uri, params).then(function (res) {
     if(callback!=null)
     callback(res.data)
   }).catch(function (res) {
-    callback(res.data)
-  })
+    callback({
+      status : '000',
+      msg : res.message
+    })
+  })*/
 }
 function nonEmpty(str){
   if( str=="" || str==null || str==undefined ){
@@ -99,6 +116,11 @@ function filterHtml(str){
   var reg=/<[^<>]+>/g;
   return str.replace(reg,'');
 }
+function pagePaging(arr,page,pageSize){
+  let slice = arr.slice(((page - 1) * pageSize ), pageSize * page);
+  return slice;
+}
+
 
 /**
  * 截取一部分字符串
@@ -283,6 +305,7 @@ Const.install = function (Vue, options) {
     isLogin:getIsLogin,
     userPortrait:userPortraitAddress,
     saveUserPortrait:savePortraitAddress,
+    pagePaging:pagePaging,
   }
   Vue.prototype.$Const = _const
 }

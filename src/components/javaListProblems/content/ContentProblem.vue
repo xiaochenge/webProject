@@ -94,9 +94,18 @@
         </div>
         </el-col>
     </el-col>
-
         </el-row>
-
+      <div v-if="data.problemreplys.length > 0">
+        <el-footer style="margin-top: 2em;"><el-pagination  layout="prev, pager, next, jumper" :total="problem.problemreplys.length" :pageSize=problem.pageSize  @current-change="pageSelect"> </el-pagination></el-footer>
+      </div>
+      <div v-else style="margin-left:auto;margin-right:auto">
+        <el-alert
+          title="暂无数据"
+          :closable="false"
+          center
+          type="info">
+        </el-alert>
+      </div>
         <div id="div3" class="toolbar " >
           <el-button @click="sbmitPost" type="primary">提交回复</el-button>
         </div>
@@ -137,7 +146,6 @@
         editorMain: null,
         editorReply:null,
         post:{//提交回复表单
-
         },
         data:{//要展示的数据
           showContent:null,
@@ -152,15 +160,24 @@
         },
         huifuTitle:'回复',
         reply : {
-         showContent:'',//楼中楼回复的类容
-          problemid:'',//主帖id
-          parent:'',//上级评论id
-          creator:''//创建者
-        }
-
+         showContent:null,//楼中楼回复的类容
+          problemid:null,//主帖id
+          parent:null,//上级评论id
+          creator:null//创建者
+        },
+        //分页对象
+        problem : {
+          problemreplys :[],
+          pageSize : 5,
+        },
       }
     },
     methods : {
+      //分页
+      pageSelect (id) {
+       let slice=this.$Const.pagePaging(this.problem.problemreplys,id,this.problem.pageSize);
+        this.data.problemreplys=slice;
+      },
 
       createReplyEditor () {
         this.editorReply = new E('#div3','#div4')
@@ -170,7 +187,9 @@
       //进入页面初始化数据
       initProblem(data){
         if(data.status==200){
-        this.data=data.obj;
+        this.problem.problemreplys=data.obj.problemreplys;
+        this.data.showContent=data.obj.showContent;
+        this.pageSelect(1);
         }else{
           this.$notify.error({
             title: '警告',
@@ -333,7 +352,7 @@
     mounted () {
       this.dialogVisible=false
       this.createReplyEditor();
-      this.problemreply.problemId=this.$Const.localStoreObj.getVal('problemId')
+      this.problemreply.problemId=this.$route.query.problemId;
       this.$Const.doPost('iProblem/Problem/findByProblemId',{id:this.problemreply.problemId},this.initProblem)
       this.user=this.$Const.localStoreObj.getUser();
     },

@@ -107,6 +107,8 @@
 </template>
 <script type="text/javascript">
 import E from 'wangeditor'
+import axios from 'axios'
+
 export default {
   name: 'HelloWorld',
   data () {
@@ -115,20 +117,20 @@ export default {
       dialogVisible: true,
       visible2: false,
       solve: 'noSolved',
-      textCondition: '',
+      textCondition: null,
       editor: null, //  富文本对象
       post: {
-        money: '', // 发帖的金额
-        showContent: '', // 发帖内容
-        title: '', // 提问帖子的标题
+        money: null, // 发帖的金额
+        showContent: null, // 发帖内容
+        title: null, // 提问帖子的标题
         creator:null, //发帖人
         problemType : 'Servlet'
       },
       problem : { // 查询条件
-         id:'', //主键
-        problemstate: '', //是否解决
-        page:1,
-        limit:20
+         id:null, //主键
+        problemstate: null, //是否解决
+        page:'1',
+        limit:'15'
       },
       problems:null,//帖子集合
       totalCount:null//总记录数
@@ -238,10 +240,8 @@ export default {
       }
 
     },
-
    openProblem(problemId){
-     this.$Const.localStoreObj.setkeyVal('problemId',problemId);
-     this.$router.push({name :'problemId',path :'/problem/javaList/contentProblem'})
+     this.$router.push({name :'problemId',path :'/problem/javaList/contentProblem?id=123',query :{problemId:problemId }})
    },
     pageSelect(id){
       this.problem.page=id;

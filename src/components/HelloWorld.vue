@@ -1,13 +1,9 @@
 <template>
 
      <el-container>
-     <el-header  height="13em">
+     <el-header  height="17em">
        <div>
-         <h1>hello word</h1>
-         在这个世界，知识是需要成本需要付费的
-         在这个世界，知识是需要成本需要付费的
-         在这个世界，知识是需要成本需要付费的      在这个世界，知识是需要成本需要付费的
-         在这个世界，知识是需要成本需要付费的
+         <h1> 冉冉， 欢迎你以后主页留给你</h1>
        </div>
      </el-header>
      <el-main>

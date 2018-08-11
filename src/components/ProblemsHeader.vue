@@ -81,18 +81,13 @@
               </el-form>
     </el-dialog>
 
-
     <router-view></router-view>
-
-
-
   </div>
 </template>
 
 
 
 <script type="text/javascript">
-
   export default {
     name: 'HelloWorld',
     data() {
@@ -107,7 +102,6 @@
         }else{
           return callback();
         }
-
       };
 
       var password = (rule, value, callback) => {//用户名校验
@@ -276,11 +270,9 @@
       },
     },
     mounted() {
-    this.$router.push({name :'javaList',path :'/problemsHeader/javaList'})
       this.loginUser=this.$Const.localStoreObj.getUser();
     if(this.loginUser!=null)
       this.loginState=true;
-
     }
   }
 </script>
