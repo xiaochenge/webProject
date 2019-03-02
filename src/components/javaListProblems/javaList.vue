@@ -37,7 +37,7 @@
               <span style="font-size:1.3em;">{{item.title}}</span>
                 <br/>
                 <br/>
-                <span style="font-size:0.9em;">{{$Const.gxSubstring($Const.filterHtml(item.showContent),0,100)}}</span>
+                <span style="font-size:0.9em;" v-html=$Const.gxSubstring($Const.filterHtml(item.showContent),0,100)></span>
               </el-col>
 
               <el-col :span="4">
@@ -45,7 +45,7 @@
                 <el-button size="mini" >发帖人: {{$Const.gxSubstring(item.creator,0,6)}}</el-button>
                 </el-tooltip>
                 <br/>
-                <div style="font-size:1.05em; margin-top:0.5em;" >{{$Const.formatDateTime(item.creationtime)}}</div>
+                <div style="font-size:1.05em; margin-top:0.5em;" >{{$Const.formatDateTime(item.createTime)}}</div>
               </el-col>
               </div>
             </el-row>
@@ -77,12 +77,9 @@
           </el-row>
 
         </el-col>
-        <div id="div1" class="toolbar">
+        <div id="div1" >
         </div>
-        <div style="padding: 5px 0; color: #ccc"></div>
-        <div id="div2" style="min-height: 35em; text-align:left;border:0.5em solid #96c2f1; "> <!--可使用 min-height 实现编辑区域自动增加高度-->
-          <p>请输入内容</p>
-        </div>
+
         <el-row>
           <el-col :span="24">
             <el-popover
@@ -96,7 +93,7 @@
                 <el-button type="primary" size="mini" @click="sbmitPost">确定</el-button>
               </div>
             </el-popover>
-        <el-button type="primary" style="margin-top:1em;" v-popover:popover5>提交帖子</el-button>
+           <el-button type="primary" style="margin-top:1em;" v-popover:popover5>提交帖子</el-button>
 
           <el-button type="danger" style="margin-top:1em;" @click="closePost">清空文本</el-button>
           </el-col>
@@ -105,9 +102,9 @@
     </el-dialog>
   </el-container>
 </template>
+
 <script type="text/javascript">
 import E from 'wangeditor'
-import axios from 'axios'
 
 export default {
   name: 'HelloWorld',
@@ -130,7 +127,7 @@ export default {
          id:null, //主键
         problemstate: null, //是否解决
         page:'1',
-        limit:'15'
+        limit:10
       },
       problems:null,//帖子集合
       totalCount:null//总记录数
@@ -154,32 +151,30 @@ export default {
     },
 
     createEditor () {
-      this.editor = new E('#div1', '#div2')
-      this.editor.customConfig.uploadImgServer = '/upload'
+      this.editor = new E('#div1');
       this.editor.customConfig.onchange = (html) => {
         this.post.showContent = html
       }
-      this.editor.customConfig.zIndex = 1000
-      this.editor.create()
+      this.editor.create();
     },
     sbmitPost () {
       var result=true;
-      if (this.post.title.length === 0) {
+      if (this.post.title == null) {
         this.$message({
           message: '发帖必须填写标题',
           type: 'warning'
         });
         result = false
         // 金额不能为空
-      } else if (this.post.money.length === 0) {
+      } else if (this.post.money.length == 0) {
         this.$message({
           message: '发帖必须填写标题发帖必须填写金额',
           type: 'warning'
         });
         result = false
-      } else if (this.editor.txt.text().length === 0) {
+      } else if (this.editor.txt.text().length < 4) {
         this.$message({
-          message: '发帖必须填写标题发帖必须填写内容',
+          message: '您发表的帖子过短',
           type: 'warning'
         });
         result = false
@@ -197,7 +192,7 @@ export default {
       this.fullscreenLoading=false;
       if(data.status==200){
         this.problems=data.obj.list;
-        this.totalCount=data.obj.totalCount;
+        this.totalCount=data.obj.total;
       }else{
         this.$notify.error({
           title: '警告',
@@ -217,7 +212,9 @@ export default {
         this.problems.splice(0,0,{
           id:data.obj,
           title:this.post.title,
-          creationtime:new Date().getTime(),
+          createTime:new Date(),
+          viewingtimes:0,
+          numberComments:0,
           showContent:this.post.showContent,
           money:this.post.money,
           creator:this.$Const.localStoreObj.getUser().username

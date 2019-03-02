@@ -3,7 +3,7 @@
     <el-header height="18em" style="z-index:2;"></el-header>
     <el-card :body-style="{ padding: '0px' }" class="portrait">
       <div style="padding: 1px;" >
-        <img class="shadow" :src=this.$Const.userPortrait+this.user.portrait >
+        <img class="shadow" :src=this.user.portrait >
       </div>
     </el-card>
     <div class="mainTop">
@@ -28,7 +28,7 @@
             {{$Const.gxSubstring($Const.filterHtml(item.showContent),0,80)}}
           </div>
           <div style="float: right">
-            <el-button  size="mini" round>{{$Const.formatDateTime(item.creationtime)}}</el-button><el-button  size="mini" round>{{item.problemstate == 'resolved'?'已解决':'未解决'}}</el-button>  <el-button  size="mini" round>悬赏金额:{{item.money}}</el-button>
+            <el-button  size="mini" round>{{$Const.formatDateTime(item.createTime)}}</el-button><el-button  size="mini" round>{{item.problemstate == 'resolved'?'已解决':'未解决'}}</el-button>  <el-button  size="mini" round>悬赏金额:{{item.money}}</el-button>
           </div>
         </el-col>
       </el-row>
@@ -46,13 +46,16 @@
               <el-card :body-style="{ padding: '0px' }">
                 <el-upload
                   class="upload-demo"
+                  ref="upload"
                   :action=$Const.saveUserPortrait
                   :before-upload="beforeAvatarUpload"
-                  :on-success="handleAvatarSuccess"
                   :on-remove="handleRemove"
+                  :on-success="handleAvatarSuccess"
+                  :data=user
+                  name="photo"
                   :limit=1
+                  :auto-upload="false"
                   :file-list="fileList"
-                  :data="user"
                   list-type="picture">
                   <el-button size="small" style="margin-left: 2em;">点击上传</el-button>
                   <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过50kb，更换头像请先删除</div>
@@ -133,7 +136,7 @@
         }
       };
 
-      var phonenumber = (rule, value, callback) => {//校验收款账号
+      var phonenumber = (rule, value, callback) => {//校验手机号
         if (!value) {
           return callback();
         }else if(!this.$Const.isInteger(value)){
@@ -182,7 +185,7 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$Const.doPost('/user/insertUser',this.user,this.returnSubmitForm)
+            this.$refs.upload.submit();
           } else {
             return false;
           }
@@ -194,7 +197,7 @@
         if(data.status==200){
           //初始化与我相关的帖子
           this.findMyProblem=data.obj.list;
-          this.totalCount=data.obj.totalCount;
+          this.totalCount=data.obj.total;
         }else{
           this.$notify.error({
             title: '警告',
@@ -223,7 +226,7 @@
        * @param file
        */
       handleRemove(file) {
-        this.$Const.doPost('/deleteFile/user/portrait',{id:this.user.id,portrait:file.response},this.deleteFile)
+      //  this.$Const.doPost('/deleteFile/user/portrait',{id:this.user.id,portrait:file.response},this.deleteFile)
       },
       deleteFile(data){
         if(data.status==200){
@@ -240,30 +243,25 @@
        * @param file
        */
       handleAvatarSuccess(res, file) {
-       // this.imageUrl = URL.createObjectURL(file.raw);
-        this.user.portrait=file.response;
-      },
-      /**
-       * 修改个人资料
-       */
-      returnSubmitForm(data){
-        if(data.status==200){
+        if(200 == res.status){
+          this.user.portrait=file.response.obj;
+          this.$Const.localStoreObj.setUser(this.user);
           this.$message({
             message: '修改资料成功',
             type: 'success'
           });
           this.innerVisible = false;
-        }else {
+        }else{
           this.$notify.error({
             title: '警告',
-            message:data.msg
+            message:res.msg
           })
         }
-      }
+      },
     },
     mounted() {
       this.user=this.$Const.localStoreObj.getUser();
-      this.fileList.push({name: '头像', url:this.$Const.userPortrait+this.user.portrait});
+      this.fileList.push({name: '头像', url:this.user.portrait});
       if(this.problem.creator!=null)
         this.$Const.doPost('/iProblem/Problem/findMyProblemAndReply',this.problem,this.findMyProblemAndReply)
     }

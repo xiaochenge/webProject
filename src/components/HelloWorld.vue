@@ -3,12 +3,12 @@
      <el-container>
      <el-header  height="17em">
        <div>
-         <h1> 冉冉， 欢迎你以后主页留给你</h1>
+         <h1> 做一个主页</h1>
        </div>
      </el-header>
      <el-main>
        <el-row>
-         <el-col :span="12"><div class="grid-content bg-purple"><router-link to="/problemsHeader"><img src='../assets/images/timg.jpg' class="homepageImg1 " /></router-link></div></el-col>
+         <el-col :span="12"><div class="grid-content bg-purple"><router-link to="/javaList"><img src='../assets/images/timg.jpg' class="homepageImg1 " /></router-link></div></el-col>
          <el-col :span="12"><div class="grid-content bg-purple-light"><img src='../assets/images/timg.jpg' class="homepageImg1 " /></div></el-col>
        </el-row>
        <el-row>

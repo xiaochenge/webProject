@@ -14,13 +14,12 @@ let userKey="asdasdsafasdfasdfsad";
 
 
 let serverInfo = {
-  // proUrl: 'http://www.imasion-gms.com/gms',
-  testUrl: 'http://192.168.1.104:8080/',
+  testUrl: 'http://120.77.81.109:8080/',
 }
 
-let userPortraitAddress= 'http://192.168.1.104:8080/user/readFileHandler?portrait=';
+let userPortraitAddress= 'http://127.0.0.1:8080/firmware/savePhoto';
 
-let savePortraitAddress= 'http://192.168.1.104:8080/firmware/save';
+let savePortraitAddress= 'http://127.0.0.1:8080/firmware/savePhoto';
 
 /** 常量键 */
 let constKey = {

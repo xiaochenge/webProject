@@ -95,9 +95,11 @@
         </el-col>
     </el-col>
         </el-row>
+
       <div v-if="data.problemreplys.length > 0">
-        <el-footer style="margin-top: 2em;"><el-pagination  layout="prev, pager, next, jumper" :total="problem.problemreplys.length" :pageSize=problem.pageSize  @current-change="pageSelect"> </el-pagination></el-footer>
+        <el-footer ><el-pagination  layout="prev, pager, next, jumper" :total="problem.problemreplys.length" :pageSize=problem.pageSize  @current-change="pageSelect"> </el-pagination></el-footer>
       </div>
+
       <div v-else style="margin-left:auto;margin-right:auto">
         <el-alert
           title="暂无数据"
@@ -106,12 +108,8 @@
           type="info">
         </el-alert>
       </div>
-        <div id="div3" class="toolbar " >
-          <el-button @click="sbmitPost" type="primary">提交回复</el-button>
-        </div>
-        <div style="padding: 5px 0; color: #ccc"></div>
-        <div name="go" id="div4" style="min-height:15em; padding:1em;border:0.5em solid #96c2f1;text-align:left;"> <!--可使用 min-height 实现编辑区域自动增加高度-->
-          <p >请输入内容</p>
+      <el-button @click="sbmitPost" type="primary" style="float:left;height: 2rem;"><span style="margin-bottom: 2rem;">提交回复</span></el-button>
+        <div id="div3" >
         </div>
       <a name="go"></a>
     </div>
@@ -133,7 +131,6 @@
     </el-dialog>
   </el-container>
 </template>
-
 
 <script type="text/javascript">
   import E from 'wangeditor'
@@ -180,8 +177,7 @@
       },
 
       createReplyEditor () {
-        this.editorReply = new E('#div3','#div4')
-        this.editorReply.customConfig.uploadImgServer = '/upload'
+        this.editorReply = new E('#div3');
         this.editorReply.create()
       },
       //进入页面初始化数据
@@ -199,7 +195,7 @@
       },
       //提交回复
       sbmitPost () {
-        var html=this.editorReply.txt.text();
+        var html=this.editorReply.txt.html();
         var str1= this.$Const.nonEmpty(html);
         var str2= this.$Const.nonEmpty(this.problemreply.problemId)
         if(str1 && str2 && this.$Const.isLogin()){
