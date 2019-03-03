@@ -1,9 +1,9 @@
 <template>
-  <el-container >
+  <el-container>
     <el-header height="18em" style="z-index:2;"></el-header>
     <el-card :body-style="{ padding: '0px' }" class="portrait">
-      <div style="padding: 1px;" >
-        <img class="shadow" :src=this.user.portrait >
+      <div style="padding: 1px;">
+        <img class="shadow" :src=this.user.portrait>
       </div>
     </el-card>
     <div class="mainTop">
@@ -12,104 +12,110 @@
     <el-container style="z-index:2;">
       <el-aside width="19.5em">
       </el-aside>
-    <el-main>
-      <el-card class="box-card userIntroduce">
+      <el-main>
+        <el-card class="box-card userIntroduce">
 
-          名称  年龄  性别
+          名称 年龄 性别
 
-      </el-card>
+        </el-card>
 
 
-      <el-row style="border-bottom:1px dashed #000;" v-for="(item,index) in findMyProblem" :key="index">
-        <el-col :span="24" >
-          <div style="float: left;margin-top:2em;margin-right: 1.8em;margin-bottom: 1em;  background-color: #D3DCE6;width: 5em;height: 7em;">楼主的头像</div>
-          <div class="grid-content">
-            <div style="text-align: center;"> <el-button type="text">{{$Const.gxSubstring(item.title,0,80)}}</el-button></div>
-            {{$Const.gxSubstring($Const.filterHtml(item.showContent),0,80)}}
-          </div>
-          <div style="float: right">
-            <el-button  size="mini" round>{{$Const.formatDateTime(item.createTime)}}</el-button><el-button  size="mini" round>{{item.problemstate == 'resolved'?'已解决':'未解决'}}</el-button>  <el-button  size="mini" round>悬赏金额:{{item.money}}</el-button>
-          </div>
-        </el-col>
-      </el-row>
+        <el-row style="border-bottom:1px dashed #000;" v-for="(item,index) in findMyProblem" :key="index">
+          <el-col :span="24">
+            <div
+              style="float: left;margin-top:2em;margin-right: 1.8em;margin-bottom: 1em;  background-color: #D3DCE6;width: 5em;height: 7em;">
+              楼主的头像
+            </div>
+            <div class="grid-content">
+              <div style="text-align: center;">
+                <el-button type="text" @click="$router.push({name:'problemId',query:{problemId: item.id}})">
+                  {{$Const.gxSubstring(item.title,0,80)}}
+                </el-button>
+              </div>
+              {{$Const.gxSubstring($Const.filterHtml(item.showContent),0,80)}}
+            </div>
+            <div style="float: right">
+              <el-button size="mini" round>{{$Const.formatDateTime(item.createTime)}}</el-button>
+              <el-button size="mini" round>{{item.problemstate == 'resolved'?'已解决':'未解决'}}</el-button>
+              <el-button size="mini" round>悬赏金额:{{item.money}}</el-button>
+            </div>
+          </el-col>
+        </el-row>
 
-      <el-footer style="text-align: center;margin-top: 2em;"><el-pagination background layout="total,prev, pager, next" :total="totalCount" :pageSize=problem.limit  @current-change="pageSelect"> </el-pagination></el-footer>
-    </el-main>
+        <el-footer style="text-align: center;margin-top: 2em;">
+          <el-pagination background layout="total,prev, pager, next" :total="totalCount" :pageSize=problem.limit
+                         @current-change="pageSelect"></el-pagination>
+        </el-footer>
+      </el-main>
     </el-container>
 
 
-    <el-dialog width="42em"  title="修改资料" :visible.sync="innerVisible" append-to-body center>
+    <el-dialog width="42em" title="修改资料" :visible.sync="innerVisible" append-to-body center>
       <!--这里填写内层div信息-->
-      <el-card class="box-card" >
-        <el-form :model="user" label-position="left" label-width="18%"  ref="user" :rules="rules">
-          <el-form-item  label="头像">
-              <el-card :body-style="{ padding: '0px' }">
-                <el-upload
-                  class="upload-demo"
-                  ref="upload"
-                  :action=$Const.saveUserPortrait
-                  :before-upload="beforeAvatarUpload"
-                  :on-remove="handleRemove"
-                  :on-success="handleAvatarSuccess"
-                  :data=user
-                  name="photo"
-                  :limit=1
-                  :auto-upload="false"
-                  :file-list="fileList"
-                  list-type="picture">
-                  <el-button size="small" style="margin-left: 2em;">点击上传</el-button>
-                  <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过50kb，更换头像请先删除</div>
-                </el-upload>
-              </el-card>
+      <el-card class="box-card">
+        <el-form :model="user" label-position="left" label-width="18%" ref="user" :rules="rules">
+          <el-form-item label="头像">
+            <el-card :body-style="{ padding: '0px' }">
+              <el-upload
+                class="upload-demo"
+                ref="upload"
+                :action=$Const.saveUserPortrait
+                :before-upload="beforeAvatarUpload"
+                :on-remove="handleRemove"
+                :on-success="handleAvatarSuccess"
+                :data=user
+                name="photo"
+                :limit=1
+                :auto-upload="false"
+                :file-list="fileList"
+                list-type="picture">
+                <el-button size="small" style="margin-left: 2em;">点击上传</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过50kb，更换头像请先删除</div>
+              </el-upload>
+            </el-card>
           </el-form-item>
           <el-form-item label="性别 *" prop="sex">
             <el-radio v-model="user.sex" label="man">小可爱</el-radio>
             <el-radio v-model="user.sex" label="lady">小公举</el-radio>
             <el-radio v-model="user.sex" label="Unknown">保持神秘</el-radio>
           </el-form-item>
-            <el-form-item label="Phone" prop="phonenumber">
-              <el-input v-model="user.phonenumber" placeholder="手机号码"></el-input>
-            </el-form-item>
-            <el-form-item label="e-mail" prop="email">
-              <el-input v-model="user.email" placeholder="电子邮箱"></el-input>
-            </el-form-item>
-            <el-form-item label="昵称" prop="username">
-              <el-input v-model="user.username" placeholder="不填写将自动生成奇怪的昵称"></el-input>
-            </el-form-item>
-            <el-form-item label="专业" prop="skill">
-              <el-input v-model="user.skill" placeholder="您是哪方面的专家"></el-input>
-            </el-form-item>
+          <el-form-item label="Phone" prop="phonenumber">
+            <el-input v-model="user.phonenumber" placeholder="手机号码"></el-input>
+          </el-form-item>
+          <el-form-item label="e-mail" prop="email">
+            <el-input v-model="user.email" placeholder="电子邮箱"></el-input>
+          </el-form-item>
+          <el-form-item label="昵称" prop="username">
+            <el-input v-model="user.username" placeholder="不填写将自动生成奇怪的昵称"></el-input>
+          </el-form-item>
+          <el-form-item label="专业" prop="skill">
+            <el-input v-model="user.skill" placeholder="您是哪方面的专家"></el-input>
+          </el-form-item>
           <el-form-item label="登陆密码 *" prop="password">
             <el-input v-model="user.password" type="password" placeholder="登陆密码"></el-input>
           </el-form-item>
-          <el-form-item >
+          <el-form-item>
             <el-button type="success" @click="submitForm('user')">保存修改</el-button>
           </el-form-item>
         </el-form>
       </el-card>
-
-
-
-
     </el-dialog>
-
-
   </el-container>
 </template>
 
 <script>
   export default {
     name: 'HelloWorld',
-    data () {
+    data() {
       //校验规则相关
       var loginname = (rule, value, callback) => {//用户名校验
         if (!value) {
           return callback(new Error('必须填写登陆账号'));
-        }else if (value.length < 4) {
+        } else if (value.length < 4) {
           return callback(new Error('登录账户最少4个字符'));
-        } else if(value.length > 20){
-          return  callback(new Error('登录名不能超过20个字符'));
-        }else{
+        } else if (value.length > 20) {
+          return callback(new Error('登录名不能超过20个字符'));
+        } else {
           return callback();
         }
 
@@ -118,11 +124,11 @@
       var password = (rule, value, callback) => {//用户名校验
         if (!value) {
           return callback(new Error('必须填写密码'));
-        }else if (value.length < 4) {
+        } else if (value.length < 4) {
           return callback(new Error('密码账户最少4个字符'));
-        } else if(value.length > 20){
-          return  callback(new Error('密码不能超过20个字符'));
-        }else{
+        } else if (value.length > 20) {
+          return callback(new Error('密码不能超过20个字符'));
+        } else {
           return callback();
         }
 
@@ -131,7 +137,7 @@
       var zfbaccountJS = (rule, value, callback) => {//校验收款账号
         if (!value && this.registerType) {
           return callback(new Error('完整注册必须填写收款账号'));
-        }else{
+        } else {
           return callback();
         }
       };
@@ -139,39 +145,39 @@
       var phonenumber = (rule, value, callback) => {//校验手机号
         if (!value) {
           return callback();
-        }else if(!this.$Const.isInteger(value)){
+        } else if (!this.$Const.isInteger(value)) {
           return callback(new Error('请输入数字'));
-        }else if(value.length!=11){
+        } else if (value.length != 11) {
           return callback(new Error('手机号码长度不对'));
-        }else{
+        } else {
           return callback();
         }
       };
       return {
-        innerVisible:false,
+        innerVisible: false,
         findMyProblem: null,
         problems: null,
         totalCount: null,
-        problem : { // 查询条件
+        problem: { // 查询条件
           creator: this.$Const.localStoreObj.getUser().id, //主键
           page: 1,
           limit: 10
         },
-        user : {
-          portrait:null,
-          phonenumber:null,
-          email:null,
-          sex:this.sex,
-          username:null,
-          skill:null,
-          detailedRegister:'simple',
+        user: {
+          portrait: null,
+          phonenumber: null,
+          email: null,
+          sex: this.sex,
+          username: null,
+          skill: null,
+          detailedRegister: 'simple',
         },
         rules: {//表单校验规则
           loginname: [
-            { validator: loginname, trigger: 'blur' }
+            {validator: loginname, trigger: 'blur'}
           ],
           password: [
-            { validator: password, trigger: 'blur' }
+            {validator: password, trigger: 'blur'}
           ],
           phonenumber: [
             {validator: phonenumber, trigger: 'blur'}
@@ -193,22 +199,22 @@
       },
 
       //得到与我相关的帖子
-      findMyProblemAndReply(data){
-        if(data.status==200){
+      findMyProblemAndReply(data) {
+        if (data.status == 200) {
           //初始化与我相关的帖子
-          this.findMyProblem=data.obj.list;
-          this.totalCount=data.obj.total;
-        }else{
+          this.findMyProblem = data.obj.list;
+          this.totalCount = data.obj.total;
+        } else {
           this.$notify.error({
             title: '警告',
-            message:data.msg
+            message: data.msg
           })
         }
-    },
+      },
       //分页查询
-      pageSelect(id){
-        this.problem.page=id;
-        this.$Const.doPost('/iProblem/Problem/findMyProblemAndReply',this.problem,this.findMyProblemAndReply)
+      pageSelect(id) {
+        this.problem.page = id;
+        this.$Const.doPost('/iProblem/Problem/findMyProblemAndReply', this.problem, this.findMyProblemAndReply)
       },
       beforeAvatarUpload(file) {
         let isJPG = file.type === 'image/jpeg';
@@ -226,98 +232,106 @@
        * @param file
        */
       handleRemove(file) {
-      //  this.$Const.doPost('/deleteFile/user/portrait',{id:this.user.id,portrait:file.response},this.deleteFile)
+        //  this.$Const.doPost('/deleteFile/user/portrait',{id:this.user.id,portrait:file.response},this.deleteFile)
       },
-      deleteFile(data){
-        if(data.status==200){
-        }else{
+      deleteFile(data) {
+        if (data.status == 200) {
+        } else {
           this.$notify.error({
             title: '警告',
-            message:data.msg
+            message: data.msg
           })
         }
       },
       /**
        * 上传成功
-      * @param res
+       * @param res
        * @param file
        */
       handleAvatarSuccess(res, file) {
-        if(200 == res.status){
-          this.user.portrait=file.response.obj;
+        if (200 == res.status) {
+          this.user.portrait = file.response.obj;
           this.$Const.localStoreObj.setUser(this.user);
           this.$message({
             message: '修改资料成功',
             type: 'success'
           });
           this.innerVisible = false;
-        }else{
+        } else {
           this.$notify.error({
             title: '警告',
-            message:res.msg
+            message: res.msg
           })
         }
       },
     },
     mounted() {
-      this.user=this.$Const.localStoreObj.getUser();
-      this.fileList.push({name: '头像', url:this.user.portrait});
-      if(this.problem.creator!=null)
-        this.$Const.doPost('/iProblem/Problem/findMyProblemAndReply',this.problem,this.findMyProblemAndReply)
+      this.user = this.$Const.localStoreObj.getUser();
+      this.fileList.push({name: '头像', url: this.user.portrait});
+      if (this.problem.creator != null)
+        this.$Const.doPost('/iProblem/Problem/findMyProblemAndReply', this.problem, this.findMyProblemAndReply)
     }
   }
 </script>
 
 <style scoped>
-  .el-header{
-    width:100%;
+  .el-header {
+    width: 100%;
     background-image: url('../../assets/images/background.jpg');
     text-align: center;
     line-height: 60px;
   }
+
   .el-aside {
-    width:10%;
+    width: 10%;
     background-image: url('../../assets/images/fpic10256.jpg');
-    background-repeat:no-repeat;
-    background-position:top;
+    background-repeat: no-repeat;
+    background-position: top;
   }
+
   .el-main {
     color: #333;
     text-align: left;
   }
-  .userIntroduce{
+
+  .userIntroduce {
     height: 8em;
-    width:100%;
+    width: 100%;
     background-image: url('../../assets/images/xpic7673.jpg');
   }
+
   .grid-content {
     margin-top: 1em;
     min-height: 5em;
   }
-.editingInformation{
-  margin-left: -42em;
-  margin-top: 0.5em;
-  margin-bottom: 0.7em;
-}
-  .background{
-    z-index:1;
-    width:100%;
+
+  .editingInformation {
+    margin-left: -42em;
+    margin-top: 0.5em;
+    margin-bottom: 0.7em;
+  }
+
+  .background {
+    z-index: 1;
+    width: 100%;
     height: 100%;
-    left:0px;
-    top:0px;
+    left: 0px;
+    top: 0px;
     position: fixed;
-    background-size:100%;
+    background-size: 100%;
     background-image: url('../../assets/images/background.jpg');
   }
-.portrait{
-  z-index:10;
-  left:24%;
-  top:24%;
-  position:absolute;
-}
-  img.shadow{
+
+  .portrait {
+    z-index: 10;
+    left: 24%;
+    top: 24%;
+    position: absolute;
+  }
+
+  img.shadow {
     margin-top: 0.3em;
-    height:8em;
+    height: 8em;
     width: 7em;
   }
 </style>
